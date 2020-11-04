@@ -19,3 +19,5 @@ git repo erstellen
 poster erstellen
 
 Mittwoch-Nachmittag (14 Uhr) als Termin festgehalten
+
+kuckuck
