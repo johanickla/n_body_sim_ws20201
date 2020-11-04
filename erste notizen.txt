@@ -1,0 +1,21 @@
+
+1 massereiches Objekt im Zentrum , 1-10 weitere Objekt
+hierarchische Probleme
+Kepler'sche Lösung für 2 Körper
+weitere Körper -> Störung der Keplerbahnen
+
+Störungsarten: 
+Bahnkreuzung (starke kurzfristige Änderungen)
+verschobene Bahn (schwache langfristige Änderungen)
+beobachtete Planetenbahnen -> Vergleich mit Anfangswerten 
+			-> Stabilität
+
+Resonanzen: Vielfache von Umlaufbahnen
+
+mercury 6 codes (n-body fortran integrator)
+
+tex-document erstellen
+git repo erstellen
+poster erstellen
+
+Mittwoch-Nachmittag (14 Uhr) als Termin festgehalten
