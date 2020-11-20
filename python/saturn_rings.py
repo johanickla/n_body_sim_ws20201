@@ -1,6 +1,7 @@
 import rebound
 import numpy as np
 sim = rebound.Simulation()
+
 OMEGA = 0.00013143527     # [1/s]
 sim.ri_sei.OMEGA = OMEGA
 
