@@ -1,0 +1,155 @@
+\documentclass[a4paper,headsepline,12pt,oneside]{scrartcl}
+
+\usepackage{scrlayer-scrpage}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\graphicspath{{./graphics/}}
+\usepackage[format=plain,bf, indention=1.5cm]{caption}
+\usepackage{subcaption}
+\usepackage[subfigure,titles]{tocloft}
+\usepackage{placeins}		%allows FloatBarrier command
+\usepackage{import}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+
+
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{epstopdf}		%converts every .eps-file to a .pdf-file, which can then be included
+\usepackage{booktabs}		%table_package
+\usepackage{url}
+
+
+\usepackage{geometry}
+\geometry{lmargin=2.5cm, rmargin=2.0cm ,bmargin = 2cm}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+
+\usepackage{physics}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[version=4]{mhchem}
+\newcommand{\s}[1]{\mathrm{#1}}
+
+
+\automark*{section}
+\clearpairofpagestyles
+\ihead{\headmark}
+\ohead{\pagemark}
+
+
+\usepackage[numbers,square,sort&compress]{natbib}
+\usepackage{sectsty}
+\fontfamily{lmr}\selectfont
+\allsectionsfont{\fontfamily{lmr}\selectfont}
+%colorful linking within a PDF-Viewer
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=cyan,
+    urlcolor=cyan,
+    citecolor=green
+}
+
+% Packages and settings for code input
+\usepackage{listings}
+% Python style for highlighting
+\definecolor{light-gray}{gray}{0.92}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{deepblue}{rgb}{0,0,0.8}
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none, %line numbers
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{deepblue},
+  otherkeywords={self},
+  commentstyle=\color{deepgreen},
+  stringstyle=\color{deepblue},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,
+  backgroundcolor = \color{light-gray}
+}
+
+\usepackage{lipsum}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\begin{titlepage}
+
+\thispagestyle{empty}
+    \makeatletter
+    \centering
+    %\vspace*{0.5 cm}
+    \includegraphics[scale = 0.2]{graphics/fsulogo.jpg}\\[1.0 cm]
+    \textsc{\Large Physikalisch-Astronomische Fakultät\\Astrophysikalisches Institut}
+    \vspace{1cm} \hrule \vspace{0.4cm}
+    \Large \textbf{N-Körper-Simulation der dynamischen Wechselwirkung von Planeten und Kleinkörpern}
+    \vspace{0.4cm} \hrule \vspace{1cm}
+    \Large Report on Research Labworks \\
+    submitted on \today \\
+    \vspace{1cm}
+
+    \begin{minipage}[t]{0.4\textwidth}
+        \begin{flushright} \large
+            \emph{Supervisor:}\\
+            \emph{Students:}
+         \end{flushright}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[t]{0.4\textwidth}
+    \begin{flushleft} \large
+          Torsten Löhne \\
+          Pauline Pfaller ( ) \\ Johannes Nicklaus (170099) 
+    \end{flushleft}
+    \end{minipage}\\[2 cm]
+    % \hfill
+    \makeatother
+\end{titlepage}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%Gutachterseite%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%Inhaltsangabe%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\setcounter{page}{0}
+\tableofcontents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\setcounter{page}{1}
+
+%\import{sections/}{n_koerper_theorie}
+
+\clearpage
+%\import{sections/}{n_koerper_berechnung}
+
+\clearpage
+%\import{sections/}{n_koerper_ergebnisse}
+
+\clearpage
+%\import{sections/}{n_koerper_ergebnisse_2}
+
+\clearpage
+\appendix
+%\import{sections/}{n_koerper_anhang}
+
+
+
+\end{document}
