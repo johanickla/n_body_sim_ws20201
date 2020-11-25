@@ -12,7 +12,8 @@ def setup():
     sim.add( m=1e-3, x=1., y=0., z= 1., vx=0, vy=1, vz=0 )         # Planet 3 (fictional)
     return sim
 #------------- calculate
-def PAFintegrate(arbsim ,tmax, Ntimes):
+
+def PAFintegrate(arbsim ,tmax, Ntimes,delta_t):
     # setting time scale
     times = np.linspace(0,tmax,Ntimes)
     zerros = np.zeros((len(times),arbsim.N-1))
@@ -22,7 +23,8 @@ def PAFintegrate(arbsim ,tmax, Ntimes):
     z = np.zeros((len(times),arbsim.N-1))
     # set integrator and dt
     arbsim.integrator = "whfast"
-    arbsim.dt = 1e-3
+    arbsim.dt = delta_t #sets the timestep
+    arbsim.move_to_com() #center of mass is at the origin and does not move
     for i, t in enumerate(times):
         arbsim.integrate(t)
         particles = arbsim.particles
@@ -71,8 +73,8 @@ def plotphase(x1,x2):
     ax1.grid()
     fig.savefig('real2.png')
 
-def PAForbitplot(sim, fancy = True, color=True, lw=2):
-    fig, ax = rebound.OrbitPlot(sim)
+def PAForbitplot(sim):
+    fig, ax = rebound.OrbitPlot(sim, fancy = True, color=True, lw=1)
     fig.savefig('orbitplot.png')
 
 #---------------- the real deal ---------------
@@ -83,7 +85,8 @@ PAForbitplot(sim1)
 a = 5
 tmax = a * 2*np.pi
 Ntimes = a*10
-sim1, times, x, y, z = PAFintegrate(sim1, tmax, Ntimes)
+delta_t=1e-3
+sim1, times, x, y, z = PAFintegrate(sim1, tmax, Ntimes, delta_t)
 #sim1.status()
 plotabsolutes(x,y,z,sim1.N-1)
 plotphase(x,y)

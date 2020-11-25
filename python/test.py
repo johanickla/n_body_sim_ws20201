@@ -1,6 +1,8 @@
 import numpy as np
-times = np.linspace(1,100,20)
-e = enumerate(times)
-r = range(1,10)
-for r in range(1,3,1):
-    print(r)
+import rebound
+sim = rebound.Simulation()
+sim.add(m=1)
+sim.add(a=1)
+fig, ax_main = rebound.OrbitPlot(sim)
+fig.savefig("image.png") # save figure to file
+fig.show() # show figure on screen
