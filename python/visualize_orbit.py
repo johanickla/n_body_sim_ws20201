@@ -4,19 +4,31 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 #--------------- Create Simulation object
-def setup():
-    sim = rebound.Simulation()
-    sim.add( m=1. )                         # sun
-    sim.add( m=1e-3, a=1., e=0.1, inc = 45 )          # Planet 1 (Jupiter)
-    sim.add(m=1e-3, x=1., y=0., z= -1., vx=0, vy=1, vz=0 )           # lesser Planet 2 (fictional)
-    sim.add( m=1e-3, x=1., y=0., z= 1., vx=0, vy=1, vz=0 )         # Planet 3 (fictional)
+
+#h= semimajoraxis Helga/Jupiter
+def setup(option,h):
+    if option=='Helga':
+        sim = rebound.Simulation()
+        sim.add( m=1. )                         # sun
+        sim.add( m=0.000954, a=5.204, M=0.600, omega=0.257, e=0.0489,inc=1.304) # Planet 1 (Jupiter) Dtaen von Wiki
+        sim.add(m=3e-7, a=5.204*h, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=4.4 )  # Helga NASA
+        #Masse unbekannt?
+        #sim.add( "NAME=Pluto")
+    if option=='fictional':
+        sim = rebound.Simulation()
+        sim.add( m=1. )                         # sun
+        sim.add( m=1e-3, a=1., e=0.1, inc = 45 )          # Planet 1 (Jupiter)
+        sim.add(m=1e-3, x=1., y=0., z= -1., vx=0, vy=1, vz=0 )           # lesser Planet 2 (fictional)
+        sim.add( m=1e-3, x=1., y=0., z= 1., vx=0, vy=1, vz=0 )         # Planet 3 (fictional)
     return sim
+
+
 #------------- calculate
 
 def PAFintegrate(arbsim ,tmax, Ntimes,delta_t):
     # setting time scale
     times = np.linspace(0,tmax,Ntimes)
-    zerros = np.zeros((len(times),arbsim.N-1))
+    #zerros = np.zeros((len(times),arbsim.N-1))
     # create equal arrays for each observable
     x = np.zeros((len(times),arbsim.N-1))
     y = np.zeros((len(times),arbsim.N-1))
@@ -78,7 +90,8 @@ def PAForbitplot(sim):
     fig.savefig('orbitplot.png')
 
 #---------------- the real deal ---------------
-sim1 = setup()
+h=0.696
+sim1 = setup('Helga',h)
 # sim1.status()
 PAForbitplot(sim1)
 # sim1.status()

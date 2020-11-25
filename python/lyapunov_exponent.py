@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import visualize_orbit
 
 
-sim = visualize_orbit.setup()
+
 # visualize_orbit.PAForbitplot(sim1)
 # a = 1
 # tmax = a * 2*np.pi*1e3
@@ -24,31 +24,55 @@ def simu(t):
     sim.integrator = "whfast"
     #sim.min_dt = 5.
     sim.dt = 1.
-
     sim.move_to_com() #center of mass is at the origin and does not move
     sim.init_megno()
     # Hide warning messages (WHFast timestep too large)
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         sim.integrate(t*2.*np.pi)
-        return [sim.calculate_megno(),(sim.calculate_lyapunov()/(2.*np.pi))] # returns MEGNO and Lypunov exp in 1/years
+    return  sim, sim.calculate_megno(),(sim.calculate_lyapunov()/(2.*np.pi)) # returns MEGNO and Lypunov exp in 1/years
 
-def plotlyapunov(l,T): #lyapunov und zeit
-    fig, ax1 = plt.subplots(1,1)
+def plotlyapunov_t(fig, ax1, l,T): #lyapunov und zeit
     ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'Zeit')
     ax1.plot(T,l,'o-')
     ax1.grid()
-    fig.savefig('lyapunov.png')
+    return fig
 
-n=30
-step=1e3
-T=np.arange(1e3,1e3+n*step,step)
+def plotlyapunov_a(l,h): #lyapunov und zeit
+    fig, ax1 = plt.subplots(1,1)
+    ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'a/a_Jupiter')
+    ax1.plot(h,l,'o-')
+    ax1.grid()
+    fig.savefig('lyapunov_a.png')
+
+n=1
+step=2e3
+start=1e6
+T=np.arange(start,start+n*step,step)
 megno=np.zeros(n)
 lyapunov=np.zeros(n)
-for i,t in enumerate(T): #in years
-    m,l=simu(t)
-    megno[i]=m
-    lyapunov[i]=l
+fig, ax1 = plt.subplots(1,1)
+#h= semimajoraxis Helga/Jupiter
+h=0.696
+sim = visualize_orbit.setup('Helga',h)
+for k in range(0,1,1):
+    for i,t in enumerate(T): #in years
+        sim, m, l=simu(t)
+        megno[i]=m
+        lyapunov[i]=l
 
-print(lyapunov)
-plotlyapunov(lyapunov,T)
+    print(lyapunov)
+
+    plotlyapunov_t(fig, ax1, lyapunov, T)
+
+fig.savefig('lyapunov_mit_return_sim.png')
+
+lyapunov_a=np.zeros(31)
+H=np.zeros(31)
+for i,h in enumerate(np.arange(0.696,0.699,0.0001)):
+    sim = visualize_orbit.setup('Helga',h) #jedes mal neu initialisiert
+    sim, m, l=simu(start+n*step)
+    lyapunov_a[i]=l
+    H[i]=h
+
+plotlyapunov_a(lyapunov_a,H)
