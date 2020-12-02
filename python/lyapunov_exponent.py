@@ -120,10 +120,8 @@ def lyapunov_helga_m_stoerung(start, end, steps, t):
         lyapunov[k] = l
     print(lyapunov)
     fig = plotlyapunov_m(lyapunov, masses)
-    plt.title('$t = %3d  2 \pi $, $a_{Stoer}/$a_{Jupiter}$ = %5.4f $' %(t,a_stoer))
+    plt.title('$t = %3d  2 \pi $, $a_{Stoer}$/$a_{Jupiter}$ = %5.4f ' %(t,a_stoer))
     fig.savefig('lyapunov_exp_m_variation.png')
-
-
 
 #----------------------------------------------------------------
 # set parameters for functions
@@ -138,9 +136,9 @@ a_end = 0.699
 a_stepsize = 0.00005
 
 m_start = -1 # m_start: starting exponent base 10
-m_end = 3 # m_end: ending exponent base 10
-m_steps = 20
-m_t = 1e4
+m_end = 5 # m_end: ending exponent base 10
+m_steps = 50
+m_t = 1e5
 
 if __name__ == "__main__":
     # lyapunov_t_multiple(t_n, t_start, t_end, t_stepsize)
