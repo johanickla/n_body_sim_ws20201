@@ -1,6 +1,5 @@
 import rebound
 import numpy as np
-import multiprocessing
 import warnings
 import matplotlib
 import matplotlib.pyplot as plt
@@ -64,26 +63,29 @@ def plotlyapunov_m(l,m):
 # -------------- plot lyapunov_t_multiple ------------
 # creates a plot of lypanov-exponents over time for n EQUAL simulations of Helga
 # starting from given 'start' time and stepping in time with 'stepsize'
-def lyapunov_t_multiple(n, start, end, stepsize):
-    #  r: number of steps
-    r = int((end-start)/stepsize) + 1
-    print('integrating', n, 'simulation(s)', 'with' ,r, 'steps')
+def lyapunov_t_multiple(n, start, end, steps):
+
     # initialize arrays for data to be stored
-    times = np.arange(start,end,stepsize)
-    # print(np.size(times))
+    times = np.logspace(start, end, steps)
+    print('size(times):',np.size(times))
+    #  r: number of steps
+    r = np.size(times)
+    print('integrating', n, 'simulation(s)', 'with' ,r, 'steps')
     megno = np.zeros(r)
     lyapunov = np.zeros(r)
     fig, ax1 = plt.subplots(1,1)
     # h: ratio of semimajor axis (Helga/Jupiter)
     h = 0.696
-    sim = visualize_orbit.setup('Helga',h)
+    sim = visualize_orbit.setup('Helga', h)
     # for each simulation calculate the lyapnov exponent and megno
     for k in range(0,n,1):
-        sim = visualize_orbit.setup('Helga',h)
+        sim = visualize_orbit.setup('Helga', h)
+
+        # lyapunov = man_lyapunov(sim, times)
         for i,t in enumerate(times):
             #i is index of years
             sim, m, l = simu(sim,t)
-            megno[i] = m
+            # megno[i] = m
             lyapunov[i] = l
             # if t == times[r-1]:
             #     sim.status()
@@ -103,6 +105,7 @@ def lyapunov_a_multiple(start,end,stepsize,t):
 
     for i,h in enumerate(H):
         sim = visualize_orbit.setup('Helga',h) #jedes mal neu initialisiert
+        # lyapunov = man_lyapunov(sim, [t])
         sim, m, l = simu(sim, t)
         lyapunov[i] = l
     fig = plotlyapunov_a(lyapunov,H)
@@ -123,7 +126,8 @@ def lyapunov_helga_m_stoerung(start, end, steps, t):
     for k in range(0,steps,1):
         sim = visualize_orbit.setup('Helga',h)
         m_stoer = masses[k]*m_Helga
-        sim.add(m = m_stoer, a=a_stoer, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=4.4 )  # Helga NASA
+        sim.add(m = m_stoer, a=a_stoer, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=0.0768 )  # Helga NASA
+        # lyapunov = man_lyapunov(sim, [t])
         sim, m, l = simu(sim, t)
         lyapunov[k] = l
     print(lyapunov)
@@ -134,9 +138,9 @@ def lyapunov_helga_m_stoerung(start, end, steps, t):
 #----------------------------------------------------------------
 # set parameters for functions
 t_n = 1
-t_stepsize = 2e4
-t_start = 1e3
-t_end = 1e6
+t_steps = 30
+t_start = 1
+t_end = 7
 
 a_t = 1e4   # a_t: Auswertungszeitpunkt
 a_start = 0.696
@@ -149,6 +153,6 @@ m_steps = 50
 m_t = 1e5
 
 if __name__ == "__main__":
-    lyapunov_t_multiple(t_n, t_start, t_end, t_stepsize)
+    lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
     # lyapunov_a_multiple( a_start, a_end, a_stepsize, a_t)
     # lyapunov_helga_m_stoerung(m_start,m_end,m_steps,m_t)

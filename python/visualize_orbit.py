@@ -10,8 +10,8 @@ def setup(option,h = 1):
     if option=='Helga':
         sim = rebound.Simulation()
         sim.add( m=1. )                         # sun
-        sim.add( m=0.000954, a=5.204, M=0.600, omega=0.257, e=0.0489,inc=1.304) # Planet 1 (Jupiter) Dtaen von Wiki
-        sim.add(m=3e-13, a=5.204*h, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=4.4 )  # Helga NASA
+        sim.add( m=0.000954, a=5.204, M=0.600, omega=0.257, e=0.0489,inc = 0.02276) # Planet 1 (Jupiter) Dtaen von Wiki
+        sim.add(m=3e-13, a=5.204*h, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=0.0768 )  # Helga NASA
         #Masse unbekannt?
         #sim.add( "NAME=Pluto")
     elif option=='fictional':
