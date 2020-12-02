@@ -27,15 +27,21 @@ def simu(sim, t):
     # center of mass is at the origin and does not move
     sim.move_to_com()
     sim.init_megno()
+    jov_yr = 11.86
     # Hide warning messages (WHFast timestep too large)
     with warnings.catch_warnings(record=True) as w:
          warnings.simplefilter("always")
-         sim.integrate(t*2.*np.pi)
+         sim.integrate(t*jov_yr)
     return  sim, sim.calculate_megno(),(sim.calculate_lyapunov()/(2.*np.pi)) # returns MEGNO and Lypunov exp in 1/years
 #--------------- plotlyapunov_t --------------------
-def plotlyapunov_t(fig, ax1, lyapunovs, times): #lyapunov und zeit
+# lyapunov und zeit
+def plotlyapunov_t(lyapunov, times, k):
+    fig, ax1 = plt.subplots(1,1)
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
     ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'Zeit $t$')
-    ax1.plot(times,lyapunovs,'o-')
+    ax1.plot(times,lyapunov,'o-', label = 'run %d' %(k+1))
+    ax1.legend()
     ax1.grid()
     return fig
 #-------------- plotlyapunov_a ---------------------
@@ -79,7 +85,9 @@ def lyapunov_t_multiple(n, start, end, stepsize):
             sim, m, l = simu(sim,t)
             megno[i] = m
             lyapunov[i] = l
-        plotlyapunov_t(fig, ax1, lyapunov, times)
+            # if t == times[r-1]:
+            #     sim.status()
+    fig = plotlyapunov_t(lyapunov, times, k)
     fig.savefig('lyapunov_exp_t_mulitple.png')
 #------------------- plot lyapunov_a_multiple ------------
 # creates a plot of lyapunov-exponents over semi-major axis
@@ -125,10 +133,10 @@ def lyapunov_helga_m_stoerung(start, end, steps, t):
 
 #----------------------------------------------------------------
 # set parameters for functions
-t_n = 3
-t_stepsize = 2e3
+t_n = 1
+t_stepsize = 2e4
 t_start = 1e3
-t_end = 5e4
+t_end = 1e6
 
 a_t = 1e4   # a_t: Auswertungszeitpunkt
 a_start = 0.696
@@ -141,6 +149,6 @@ m_steps = 50
 m_t = 1e5
 
 if __name__ == "__main__":
-    # lyapunov_t_multiple(t_n, t_start, t_end, t_stepsize)
+    lyapunov_t_multiple(t_n, t_start, t_end, t_stepsize)
     # lyapunov_a_multiple( a_start, a_end, a_stepsize, a_t)
-    lyapunov_helga_m_stoerung(m_start,m_end,m_steps,m_t)
+    # lyapunov_helga_m_stoerung(m_start,m_end,m_steps,m_t)
