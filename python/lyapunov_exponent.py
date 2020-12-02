@@ -20,7 +20,7 @@ import visualize_orbit
 # #self, seed=None
 # print(lyapunov)
 
-def simu(t):
+def simu(sim,t):
     sim.integrator = "whfast"
     #sim.min_dt = 5.
     sim.dt = 1.
@@ -45,34 +45,38 @@ def plotlyapunov_a(l,h): #lyapunov und zeit
     ax1.grid()
     fig.savefig('lyapunov_a.png')
 
-n=1
-step=2e3
-start=1e6
-T=np.arange(start,start+n*step,step)
-megno=np.zeros(n)
-lyapunov=np.zeros(n)
-fig, ax1 = plt.subplots(1,1)
-#h= semimajoraxis Helga/Jupiter
-h=0.696
-sim = visualize_orbit.setup('Helga',h)
-for k in range(0,1,1):
+
+def lyapunov_t(n,step,start):
+    T=np.arange(start,start+n*step,step)
+    megno=np.zeros(n)
+    lyapunov=np.zeros(n)
+    fig, ax1 = plt.subplots(1,1)
+    #h= semimajoraxis Helga/Jupiter
     for i,t in enumerate(T): #in years
         sim, m, l=simu(t)
         megno[i]=m
         lyapunov[i]=l
 
-    print(lyapunov)
+        print(lyapunov)
 
-    plotlyapunov_t(fig, ax1, lyapunov, T)
+        plotlyapunov_t(fig, ax1, lyapunov, T)
+    fig.savefig('lyapunov_t.png')
 
-fig.savefig('lyapunov_mit_return_sim.png')
+def lyapunov_a(n,step,start,T):
+    #step and start beziehen sich auf das Verhältnis der großen halbachse a/Halbachse von a_Jupiter
+    #T ist der betrachtete Zeitpunkt
+    lyapunov=np.zeros(n)
+    H=np.zeros(n)
+    for i,h in enumerate(np.arange(start,start+n*step,step)):
+        sim = visualize_orbit.setup('Helga',h) #jedes mal neu initialisiert
+        sim, m, l=simu(sim,T)
+        lyapunov[i]=l
+        H[i]=h
+    plotlyapunov_a(lyapunov,H)
 
-lyapunov_a=np.zeros(31)
-H=np.zeros(31)
-for i,h in enumerate(np.arange(0.696,0.699,0.0001)):
-    sim = visualize_orbit.setup('Helga',h) #jedes mal neu initialisiert
-    sim, m, l=simu(start+n*step)
-    lyapunov_a[i]=l
-    H[i]=h
+#lyapunov zu verschiedenen Zeitpunkten
+sim = visualize_orbit.setup('Helga',0.969)
+#lyapunov_t(10,2e3,1e3)
 
-plotlyapunov_a(lyapunov_a,H)
+#lyapunov für einen Zeitpunkt für verschiedene Halbachsen
+lyapunov_a(31,0.0001,0.696,1e5)
