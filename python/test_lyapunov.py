@@ -1,7 +1,6 @@
 import rebound
 import numpy as np
 import warnings
-import matplotlib
 import matplotlib.pyplot as plt
 import visualize_orbit
 
@@ -27,7 +26,7 @@ def test_1():
     print('L_exp 1:  ', round(l1,3), '   L_exp 2:  ', round(l2,3))
 
 def test_2():
-    a = [16, 64,256,1024,4098]
+    a = [16,64,256,1024,4098]
     Lyapunov=[]
     S=[]
     T = []

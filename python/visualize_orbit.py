@@ -12,14 +12,13 @@ def setup(option,h = 1):
         sim.add( m=1. )                         # sun
         sim.add( m=0.000954, a=5.204, M=0.600, omega=0.257, e=0.0489,inc = 0.02276) # Planet 1 (Jupiter) Dtaen von Wiki
         sim.add(m=3e-13, a=5.204*h, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=0.0768 )  # Helga NASA
-        #Masse unbekannt?
         #sim.add( "NAME=Pluto")
     elif option=='fictional':
         sim = rebound.Simulation()
         sim.add( m=1. )                         # sun
-        sim.add( m=1e-3, a=1., e=0.1, inc = 45 )          # Planet 1 (Jupiter)
-        sim.add(m=1e-3, x=1., y=0., z= -1., vx=0, vy=1, vz=0 )           # lesser Planet 2 (fictional)
-        sim.add( m=1e-3, x=1., y=0., z= 1., vx=0, vy=1, vz=0 )         # Planet 3 (fictional)
+        sim.add( m=1e-3, a=1., e=0.1, inc = 0 )          # Planet 1 (Jupiter)
+        sim.add(m=1e-4, a=1., e=0.1, inc = np.pi/2 )           # lesser Planet 2 (fictional)
+        # sim.add( m=1e-3, x=1., y=0., z= 1., vx=0, vy=1, vz=0 )         # Planet 3 (fictional)
     return sim
 
 
@@ -83,21 +82,24 @@ def plotphase(x1,x2):
     fig.savefig('orbit_as_phase_plot.png')
 
 def PAForbitplot(sim):
-    fig, ax = rebound.OrbitPlot(sim, fancy = True, color=True, lw=1)
+    fig, ax = rebound.OrbitPlot(sim, fancy = False, color=True, lw=1)
     fig.savefig('orbitplot.png')
 
 #---------------- the real deal ---------------
 h=0.696
-sim1 = setup('Helga',h)
-# sim1.status()
-PAForbitplot(sim1)
-# sim1.status()
-a = 5
-tmax = a * 2*np.pi
+
+a = int(1e1)
+tmax = a*2*np.pi
 Ntimes = a*10
-delta_t=1e-3
-sim1, times, x, y, z = PAFintegrate(sim1, tmax, Ntimes, delta_t)
-#sim1.status()
-plotabsolutes(x,y,z,sim1.N-1)
-plotphase(x,y)
-#sim1.status()
+delta_t = 1e-3
+
+if __name__ == "__main__":
+    sim1 = setup('fictional',h)
+    sim1, times, x, y, z = PAFintegrate(sim1, tmax, Ntimes, delta_t)
+    # sim1.status()
+    PAForbitplot(sim1)
+    # sim1.status()
+    # sim1.status()
+    plotabsolutes(x,y,z,sim1.N-1)
+    plotphase(x,y)
+    # sim1.status()
