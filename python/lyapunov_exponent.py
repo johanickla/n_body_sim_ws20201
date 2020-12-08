@@ -1,8 +1,8 @@
 import rebound
 import numpy as np
 import warnings
-import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import visualize_orbit
 
 
@@ -31,7 +31,7 @@ def simu(sim, t):
     with warnings.catch_warnings(record=True) as w:
          warnings.simplefilter("always")
          sim.integrate(t*jov_yr)
-    return  sim, sim.calculate_megno(),(sim.calculate_lyapunov()/(2.*np.pi)) # returns MEGNO and Lypunov exp in 1/years
+    return  sim,(sim.calculate_lyapunov()/(2.*np.pi)) # returns MEGNO and Lypunov exp in 1/years
 #--------------- plotlyapunov_t --------------------
 # lyapunov und zeit
 def plotlyapunov_t(lyapunov, times, k):
@@ -60,11 +60,28 @@ def plotlyapunov_m(l,m):
     ax1.plot(m,l,'o-')
     ax1.grid()
     return fig
-# -------------- plot lyapunov_t_multiple ------------
+#---------------- plotlyapunov_mt ---------------------
+def plotlyapunov_ma(m,a,l):
+    # print(m,a,l)
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    # m, a = np.meshgrid(m, a)
+    #ax.set_xscale('log')
+    # m,l = np.meshgrid(m,l)
+    ax.set(zlabel = 'Lyapunov-Exponent', xlabel = '$m$/$M_{Helga}$',
+                ylabel= '$a$/$a_{Jupiter}$')
+    # ax.set_xlim(1e-13, 1e-8)
+    # ax.set_ylim(3.62,3.64 )
+    # Plot the surface.
+    surf = ax.plot_surface(m, a, l, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    # Add a color bar which maps values to colors.
+    # fig.colorbar(surf, shrink=0.5, aspect=5)
+    return fig
+
+
+# -------------- lyapunov_t_multiple ------------
 # creates a plot of lypanov-exponents over time for n EQUAL simulations of Helga
 # starting from given 'start' time and stepping in time with 'stepsize'
 def lyapunov_t_multiple(n, start, end, steps):
-
     # initialize arrays for data to be stored
     times = np.logspace(start, end, steps)
     print('size(times):',np.size(times))
@@ -80,11 +97,10 @@ def lyapunov_t_multiple(n, start, end, steps):
     # for each simulation calculate the lyapnov exponent and megno
     for k in range(0,n,1):
         sim = visualize_orbit.setup('Helga', h)
-
         # lyapunov = man_lyapunov(sim, times)
         for i,t in enumerate(times):
             #i is index of years
-            sim, m, l = simu(sim,t)
+            sim, l = simu(sim,t)
             # megno[i] = m
             lyapunov[i] = l
             # if t == times[r-1]:
@@ -106,7 +122,7 @@ def lyapunov_a_multiple(start,end,stepsize,t):
     for i,h in enumerate(H):
         sim = visualize_orbit.setup('Helga',h) #jedes mal neu initialisiert
         # lyapunov = man_lyapunov(sim, [t])
-        sim, m, l = simu(sim, t)
+        sim, l = simu(sim, t)
         lyapunov[i] = l
     fig = plotlyapunov_a(lyapunov,H)
     plt.title('Auswertung bei $t = %3d  2 \pi $' %t)
@@ -118,7 +134,7 @@ def lyapunov_helga_m_stoerung(start, end, steps, t):
     lyapunov = np.zeros(steps)
     # masses: logaritmisch ansteigende Massen
     masses = np.logspace(start, end, steps)
-    print(masses)
+    # print(masses)
     m_Helga = 3e-13
     a_Helga = 5.204
     h = 0.696
@@ -128,31 +144,65 @@ def lyapunov_helga_m_stoerung(start, end, steps, t):
         m_stoer = masses[k]*m_Helga
         sim.add(m = m_stoer, a=a_stoer, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=0.0768 )  # Helga NASA
         # lyapunov = man_lyapunov(sim, [t])
-        sim, m, l = simu(sim, t)
+        sim, l = simu(sim, t)
         lyapunov[k] = l
-    print(lyapunov)
+    # print(lyapunov)
     fig = plotlyapunov_m(lyapunov, masses)
     plt.title('$t = %3d  2 \pi $, $a_{Stoer}$/$a_{Jupiter}$ = %5.4f ' %(t,a_stoer))
     fig.savefig('lyapunov_exp_m_variation.png')
+#----------------------------------------------------------------
+def lyapunov_helga_ma_stoerung(m_start,m_end,m_steps,a_start,a_end,a_steps,t):
+    m_Helga = 3e-13
+    a_Helga = 5.204
+    h = 0.696
+    # lyapunovs: O-array
+    lyapunovs = np.zeros((m_steps, a_steps))
+    # masses: logaritmisch ansteigende Massenfaktoren
+    masses = np.logspace(m_start, m_end, m_steps)
+    masses2 = masses * m_Helga
+    print(masses2)
+    # a: linear ansteigende Halbachsenfaktoren
+    a = np.linspace(a_start, a_end, a_steps)
+    a2= a*a_Helga
+    print(a2)
+    for k in range(0,m_steps,1):
+        for j in range(0,a_steps,1):
+            sim = visualize_orbit.setup('Helga',h)
+            m_stoer = masses2[k]
+            a_stoer = a2[j]
+            sim.add(m=m_stoer, a=a_stoer, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=0.0768 )  # Helga NASA
+            # lyapunov = man_lyapunov(sim, [t])
+            sim, l = simu(sim, t)
+            # print(l)
+            lyapunovs[k,j] = l
+    #print(lyapunovs)
+    fig = plotlyapunov_ma(masses, a, lyapunovs)
+    plt.title('$t = %3d$ years' %(t))
+    fig.savefig('lyapunov_exp_ma_stoerung.png')
 
 #----------------------------------------------------------------
-# set parameters for functions
+#-------------------- set parameters for functions---------------
 t_n = 1
 t_steps = 30
 t_start = 1
 t_end = 7
 
-a_t = 1e4   # a_t: Auswertungszeitpunkt
-a_start = 0.696
-a_end = 0.699
-a_stepsize = 0.00005
+a_t = 1e5   # a_t: Auswertungszeitpunkt
+a_start_1 = 0.696
+a_end_1 = 0.699
+a_stepsize_1 = 0.00005
 
-m_start = -1 # m_start: starting exponent base 10
-m_end = 5 # m_end: ending exponent base 10
+m_start = 1 # m_start: starting exponent base 10
+m_end = 3 # m_end: ending exponent base 10
 m_steps = 50
-m_t = 1e5
+m_t = 1e3
+a_start_2 = 0.698
+a_end_2 = 0.701
+a_steps_2 = 30
+t = 5e4
 
 if __name__ == "__main__":
-    lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
-    # lyapunov_a_multiple( a_start, a_end, a_stepsize, a_t)
+    # lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
+    # lyapunov_a_multiple( a_start_1, a_end_1, a_stepsize_1, a_t)
     # lyapunov_helga_m_stoerung(m_start,m_end,m_steps,m_t)
+    lyapunov_helga_ma_stoerung(m_start,m_end,m_steps,a_start_2,a_end_2,a_steps_2,t)
