@@ -7,6 +7,9 @@ import visualize_orbit
 
 h = 0.696
 sim = visualize_orbit.setup('Helga', h)
-
+sim.init_megno()
+sim.status()
+sim.integrate(10)
 l = sim.calculate_lyapunov()
 print(l)
+sim.status()
