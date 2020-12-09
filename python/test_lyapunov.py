@@ -26,7 +26,8 @@ def test_1():
     print('L_exp 1:  ', round(l1,3), '   L_exp 2:  ', round(l2,3))
 
 def test_2():
-    a = [16,64,256,1024,4098]
+    # a = [16,64,256,1024,4098]
+    a = [2,4,8]
     Lyapunov=[]
     S=[]
     T = []
@@ -42,6 +43,7 @@ def test_2():
             sim.integrate(time)
             exp = round(sim.calculate_lyapunov(),4)
             l[k] = exp
+            # sim.status()
         Lyapunov.append(l)
         T.append(times)
         s = round(sum(Lyapunov[i]),3)
