@@ -249,8 +249,8 @@ m_end_2 = 6 # m_end: ending exponent base 10
 m_steps_2 = 60
 a_start_2 = 0.697
 a_end_2 = 0.701
-a_steps_2 = 20
-t = 1e5
+a_steps_2 = 30
+t = 1e6
 
 if __name__ == "__main__":
     # lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
