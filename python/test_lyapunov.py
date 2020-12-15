@@ -27,12 +27,12 @@ def test_1():
 
 def test_2():
     # a = [16,64,256,1024,4098]
-    a = [2,4,8,16]
+    a = [2,4,8,16,32,64]
     Lyapunov=[]
     S=[]
     T = []
     for i in range(len(a)):
-        times = np.linspace(0, 10, a[i])
+        times = np.linspace(0, 100, a[i])
         l = np.zeros(len(times))
         sim = visualize_orbit.setup('Helga', h)
         sim.integrator = "whfast"
@@ -57,6 +57,8 @@ def test_2():
     ax1.grid()
     for i in range(len(a)):
         ax1.plot(T[i],Lyapunov[i],'o-', label = '%d' %a[i])
+        # ax1.set_xscale('log')
+        # ax1.set_yscale('log')
         ax1.legend()
     fig.savefig('test_lyapunov.png')
 

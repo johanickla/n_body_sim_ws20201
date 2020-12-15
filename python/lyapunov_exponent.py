@@ -68,7 +68,6 @@ def plotlyapunov_m(l,m):
     return fig
 #---------------- plotlyapunov_mt_surface ---------------------
 def plotlyapunov_ma_surface(m,a,l):
-    # print(m,a,l)
     m = np.log10(m)
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(10,8))
     # print('shape m:', np.shape(m))
@@ -76,9 +75,6 @@ def plotlyapunov_ma_surface(m,a,l):
     m, a = np.meshgrid(m, a)
     print('shape m:', np.shape(m))
     print('shape a:', np.shape(a))
-
-    # ax.set_xscale('log')
-    # ax.set_zscale('log')
     ax.set(zlabel = 'Lyap.-Expo.', xlabel = '$\log_{10}$($m$/$M_{Helga})$',
                 ylabel= '$a$/$a_{Jupiter}$')
     # ax.set_xlim(1e-13, 1e-8)
@@ -88,12 +84,21 @@ def plotlyapunov_ma_surface(m,a,l):
     # l = np.log10(l)
     l = np.transpose(l)
     print('shape l:', np.shape(l))
-
 # Plot the surface.
     surf = ax.plot_surface(m, a, l, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-# Add a color bar which maps values to colors.
-    # fig.colorbar(surf, shrink=0.5, aspect=5)
     return fig
+#---------------- plotlyapunov_max ---------------------
+def plotlyapunov_max(masses,a_max_lyapunov,t):
+    fig, ax1 = plt.subplots(1,1)
+    ax1.set_xscale('log')
+    ax1.plot(masses,a_max_lyapunov, label= '')
+    ax1.set(xlabel = '$\log_{10}$($m$/$M_{Helga})$',
+                ylabel= '$a$/$a_{Jupiter}$')
+    plt.title('max. Lyapunovexponent nach $t = %3d$ years %(t)')
+
+    ax1.grid()
+    return fig
+#------------------------------------------------------
 # -------------- lyapunov_t_multiple ------------
 # creates a plot of lypanov-exponents over time for n EQUAL simulations of Helga
 # starting from given 'start' time and stepping in time with 'stepsize'
@@ -200,6 +205,8 @@ def lyapunov_helga_ma_stoerung(m_start,m_end,m_steps,a_start,a_end,a_steps,t):
     h = 0.696
     # lyapunovs: O-array
     lyapunovs = np.zeros((m_steps, a_steps))
+    a_max_lyapunov = np.zeros((m_steps))
+
     # print(lyapunovs)
     # masses: logaritmisch ansteigende Massenfaktoren
     masses = np.logspace(m_start, m_end, m_steps)
@@ -221,10 +228,13 @@ def lyapunov_helga_ma_stoerung(m_start,m_end,m_steps,a_start,a_end,a_steps,t):
                 l = 1e-8
             # print(l)
             lyapunovs[k,j] = l
+        a_max_lyapunov[k] = a[ np.where( lyapunovs[k,:] == max(lyapunovs[k,:]) ) ]
     # print(lyapunovs)
     fig1 = plotlyapunov_ma_surface(masses, a, lyapunovs)
     plt.title('$t = %3d$ years' %(t))
     fig1.savefig('lyapunov_exp_ma_stoerung.png')
+    fig2 = plotlyapunov_max(masses,a_max_lyapunov,t)
+    fig2.savefig('maximaler Lyapunovexponent')
 
 #----------------------------------------------------------------
 #-------------------- set parameters for functions---------------
@@ -245,12 +255,12 @@ m_t = 1e5
 m_runs = 4 # m_runs: wie oft soll die Schrittzahl verdoppelt werden
 
 m_start_2 = 1 # m_start: starting exponent base 10
-m_end_2 = 6 # m_end: ending exponent base 10
-m_steps_2 = 60
-a_start_2 = 0.697
+m_end_2 = 3 # m_end: ending exponent base 10
+m_steps_2 = 50
+a_start_2 = 0.695
 a_end_2 = 0.701
 a_steps_2 = 30
-t = 1e6
+t = 1e5
 
 if __name__ == "__main__":
     # lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
