@@ -35,11 +35,13 @@ def simu(sim, t):
 #--------------- plotlyapunov_t --------------------
 # lyapunov und zeit
 def plotlyapunov_t(lyapunov, times, k):
+    times_j=times/11.863 #Zeit in Jupiterjahren, 1Jupiterjahr sind 11,863 erdjahre
+    lyapunov_j=lyapunov*11.863 #in 1/jupiterjahrn
     fig, ax1 = plt.subplots(1,1)
     ax1.set_xscale('log')
     ax1.set_yscale('log')
-    ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'Zeit $t$')
-    ax1.plot(times,lyapunov,'o-', label = 'run %d' %(k+1))
+    ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'Zeit $t$ in Jupiterjahren')
+    ax1.plot(times_j,lyapunov,'o-', label = 'run %d' %(k+1))
     ax1.legend()
     ax1.grid()
     return fig
