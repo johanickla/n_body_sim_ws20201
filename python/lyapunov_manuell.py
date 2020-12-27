@@ -87,7 +87,7 @@ def delta_h_variieren():
 
     ax1.plot(np.transpose(delta_h_n),lyapunov_manu[0,:],'o-')
     ax1.plot(np.transpose(delta_h_n),lyapunov_manu[1,:],'o-')
-    fig.savefig('lyapunov_delta_h.png')
+    fig.savefig('plots/lyapunov_delta_h.png')
 
 def h_variieren(n,start,step):
     delta_h=1e-10
@@ -102,10 +102,10 @@ def h_variieren(n,start,step):
     ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'h')
     ax1.plot(np.transpose(H),lyapunov_manu[:],'o-')
     #ax1.plot(np.transpose(H),lyapunov_manu[1,:],'o-')
-    fig.savefig('lyapunov_a_manuell.png')
+    fig.savefig('plots/lyapunov_a_manuell.png')
 
 # abstand, ln_abstand, sim1, sim2, times1, x1, y1, z1 = Abstand_ln('Helga',0.697, 1e-10,0.2e7, 100, 1.)
 # lyapunov_manu,times1 = lyapunov_manuell(ln_abstand, times1, x1, y1, z1,0.697, 1e-10, 0.2e7, 100, 1.)
 # fig=lyapunov_exponent.plotlyapunov_t(lyapunov_manu, times1, 0)
-# fig.savefig('lyapunov_t_manuell.png')
+# fig.savefig('plots/lyapunov_t_manuell.png')
 h_variieren(31,0.696,0.0001)
