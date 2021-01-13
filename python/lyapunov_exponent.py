@@ -26,7 +26,7 @@ def simu(sim, t):
     # center of mass is at the origin and does not move
     sim.move_to_com()
     sim.init_megno()
-    jov_yr = 11.86
+    #jov_yr = 11.86
     # Hide warning messages (WHFast timestep too large)
     with warnings.catch_warnings(record=True) as w:
          warnings.simplefilter("always")
@@ -52,7 +52,7 @@ def plotlyapunov_a(l,a):
     ax1.set(ylabel = 'Lyapunov-Exponent', xlabel = '$a$/$a_{Jupiter}$')
     ax1.plot(a,l,'o-')
     ax1.grid()
-    # fig.savefig('lyapunov_a.png')
+    #fig.savefig('lyapunov_simu_a.png')
     return fig
 # --------------- plotlyapunov_m ---------------------
 def plotlyapunov_m(l,m):
@@ -95,7 +95,7 @@ def plotlyapunov_ma_surface(m,a,l):
     surf = ax.plot_surface(m, a, l, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 # Add a color bar which maps values to colors.
     # fig.colorbar(surf, shrink=0.5, aspect=5)
-    return fig
+    return figpAF
 # -------------- lyapunov_t_multiple ------------
 # creates a plot of lypanov-exponents over time for n EQUAL simulations of Helga
 # starting from given 'start' time and stepping in time with 'stepsize'
@@ -144,7 +144,7 @@ def lyapunov_a_multiple(start,end,stepsize,t):
         lyapunov[i] = l
     fig = plotlyapunov_a(lyapunov,H)
     plt.title('Auswertung bei $t = %3d  2 \pi $' %t)
-    fig.savefig('lyapunov_exp_a_multiple.png')
+    fig.savefig('lyapunov_simu_a_multiple.png')
 # -----------------------------------------------------------------
 def lyapunov_helga_m_stoerung(start, end, steps, t):
     # initialize arrays for data to be stored

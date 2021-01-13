@@ -25,6 +25,8 @@ def setup(option,h = 1):
 #------------- calculate -------------
 
 def PAFintegrate(arbsim ,tmax, Ntimes,delta_t):
+    arbsim.move_to_com() #center of mass is at the origin and does not move
+    arbsim.init_megno()
     # setting time scale
     times = np.linspace(0,tmax,Ntimes)
     #zerros = np.zeros((len(times),arbsim.N-1))
@@ -32,18 +34,24 @@ def PAFintegrate(arbsim ,tmax, Ntimes,delta_t):
     x = np.zeros((len(times),arbsim.N-1))
     y = np.zeros((len(times),arbsim.N-1))
     z = np.zeros((len(times),arbsim.N-1))
+    a = np.zeros((len(times),arbsim.N-1))
+    lyapunov_PAF = np.zeros(len(times))
     # set integrator and dt
     arbsim.integrator = "whfast"
     arbsim.dt = delta_t #sets the timestep
-    arbsim.move_to_com() #center of mass is at the origin and does not move
+
     for i, t in enumerate(times):
         arbsim.integrate(t)
+        lyapunov_PAF[i]=(arbsim.calculate_lyapunov()/(2.*np.pi))
         particles = arbsim.particles
         for k in range(1,arbsim.N,1):
             x[i,k-1] = particles[k].x
             y[i,k-1] = particles[k].y
             z[i,k-1] = particles[k].z
-    return arbsim, times, x, y, z
+            a[i,k-1] = particles[k].a
+
+    return arbsim, times, x, y, z, a, lyapunov_PAF
+
 
 #-------------------- test plotting ----------------------------
 # fig1 = plt.figure(figsize=(5,5))
@@ -73,6 +81,17 @@ def plotabsolutes(x,y,z,n):
         ax3.plot(times,z[:,k])
         ax3.grid()
     fig1.savefig('orbit_in_cartesians.png')
+#-----------------plot a over time-------------------
+def plota(a,times):
+    axes = ()
+    fig1, ax1 = plt.subplots(1, 1)
+    ax1 = plt.subplot(111)
+    for k in range(a.shape[1]):
+        ax1.set( ylabel= 'a')
+        ax1.set( xlabel= 'Zeit')
+        ax1.plot(times, a[:,k], label = 'Planet %d' %(k+1))
+        ax1.grid()
+    fig1.savefig('orbit_in_a.png')
 #------------------ plot phase diagram (only useful for two coordinate)
 def plotphase(x1,x2):
     fig, ax1 = plt.subplots(1,1)
