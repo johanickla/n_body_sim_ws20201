@@ -6,22 +6,25 @@ import matplotlib.pyplot as plt
 #--------------- Create Simulation object
 
 #h= semimajoraxis Helga/Jupiter
-def setup(option,h = 1):
+def setup(option,h = 1,exc = 1):
     if option=='Helga':
         sim = rebound.Simulation()
         sim.add( m=1. )                         # sun
         sim.add( m=0.000954, a=5.204, M=0.600, omega=0.257, e=0.0489,inc = 0.02276) # Planet 1 (Jupiter) Dtaen von Wiki
         sim.add(m=3e-13, a=5.204*h, M=38.41426796877275, omega=0.257, e=.08634521111588543 ,inc=0.0768 )  # Helga NASA
         #sim.add( "NAME=Pluto")
-    elif option=='fictional':
+    elif option == 'resonant':
         sim = rebound.Simulation()
         sim.add( m=1. )                         # sun
-        sim.add( m=1e-3, a=1., e=0.1, inc = 0 )          # Planet 1 (Jupiter)
-        sim.add(m=1e-4, a=1., e=0.1, inc = np.pi/2 )           # lesser Planet 2 (fictional)
+        sim.add( m=0.000954, a=5.204, M=0.600, omega=0.257, e=0.0489,inc = 0.02276) # Planet 1 (Jupiter) Dtaen von Wiki
+        sim.add(m=3e-13, a=5.204*h, M=38.414268, omega=0.257, e= exc,inc=0.0768 )  # Helga NASA
+    elif option=='fictional':
+        sim = rebound.Simulation()
+        sim.add( m=1. )                                         # sun
+        sim.add( m=1e-3, a=1., e=0.1, inc = 0 )                 # Planet 1 (Earth)
+        sim.add(m=1e-4, a=1., e=0.1, inc = np.pi/2 )            # lesser Planet 2 (fictional)
         # sim.add( m=1e-3, x=1., y=0., z= 1., vx=0, vy=1, vz=0 )         # Planet 3 (fictional)
     return sim
-
-
 #------------- calculate -------------
 
 def PAFintegrate(arbsim ,tmax, Ntimes,delta_t):
@@ -98,11 +101,11 @@ def plotphase(x1,x2):
     ax1.set(ylabel ='$x_2$', xlabel = '$x_1$')
     ax1.plot(x1,x2,'o-')
     ax1.grid()
-    fig.savefig('orbit_as_phase_plot.png')
+    fig.savefig('plots/orbit_as_phase_plot.png')
 
 def PAForbitplot(sim):
     fig, ax = rebound.OrbitPlot(sim, fancy = False, color=True, lw=1)
-    fig.savefig('orbitplot.png')
+    fig.savefig('plots/orbitplot.png')
 
 #---------------- the real deal ---------------
 h=0.696
