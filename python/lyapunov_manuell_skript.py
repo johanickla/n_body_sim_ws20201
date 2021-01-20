@@ -73,7 +73,7 @@ def lyapunov_manuell(ln_abstand, times1, x1, y1, z1,h,delta_h,tmax, delta_t):
     #slope nur für Helga!!
     #fit für immer einen Punkt mehr
     #erster punkt wird übersprungen!!!
-    N=int(Ntimes/10) #zahl der gemittelten punkte
+    N=int(Ntimes/10) #zahl der gemittelten punkteF
 
     for n in range(N+1,x1.shape[0],1):
         slope[n], intercept[n], r_value[n], p_value[n], std_err[n] = stats.linregress(times1[n-N:n], ln_abstand[n-N:n,1])###
