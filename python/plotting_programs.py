@@ -84,7 +84,6 @@ def plotlyapunov_ma_surface(m,a,l,h = None):
     ax1.set(xlabel = '$m$/$M_{Helga}$', xscale = 'log',
                 ylabel= '$a$/$a_{Jupiter}$')
     fig.colorbar(c, ax=ax1)
-    ax1.set(xscale = 'log')
     return fig
 #---------------- plotlyapunov_max ---------------------
 def plotlyapunov_max(masses,a_max_lyapunov,t):

@@ -18,7 +18,7 @@ from plotting_programs import *
 # #self, seed=None
 # print(lyapunov)
 #------------- calculate the hill sphere radius of an object with mass m, half achse a
-#------------- surrounding an object with size M at an excentricity e
+#----------------- surrounding an object with size M at an excentricity e
 def hill_sphere_radius(a,m,M,e):
     r = a*(1-e) * ( (m/(3*M))**(1/3) )
     return r
