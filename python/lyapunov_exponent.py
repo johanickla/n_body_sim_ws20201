@@ -6,17 +6,6 @@ import visualize_orbit
 from plotting_programs import *
 
 
-# visualize_orbit.PAForbitplot(sim1)
-# a = 1
-# tmax = a * 2*np.pi*1e3
-# Ntimes = a*10
-# delta_t=1.
-# sim1.init_megno()
-# lyapunov = sim1.calculate_lyapunov()/(2.*np.pi) #in years
-# sim1, times, x, y, z = visualize_orbit.PAFintegrate(sim1, tmax, Ntimes, delta_t)
-# #visualize_orbit.plotabsolutes(x,y,z,sim1.N-1)
-# #self, seed=None
-# print(lyapunov)
 #------------- calculate the hill sphere radius of an object with mass m, half achse a
 #----------------- surrounding an object with size M at an excentricity e
 def hill_sphere_radius(a,m,M,e):
@@ -39,71 +28,8 @@ def simu(sim, t):
     with warnings.catch_warnings(record=True) as w:
          warnings.simplefilter("always")
          sim.integrate(t)
-    return  sim,(sim.calculate_lyapunov()/(2.*np.pi)) # returns Lypunov exp in 1/years
-#--------------- plotlyapunov_t --------------------
-# lyapunov und zeit
-def plotlyapunov_t(lyapunov, times, k):
-    times_j=times/11.863 #Zeit in Jupiterjahren, 1Jupiterjahr sind 11,863 erdjahre
-    lyapunov_j=lyapunov*11.863 #in 1/jupiterjahrn
-    fig, ax1 = plt.subplots(1,1)
-    ax1.set_xscale('log')
-    ax1.set_yscale('log')
-    ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'Zeit $t$ in Jupiterjahren')
-    ax1.plot(times_j,lyapunov,'o-', label = 'run %d' %(k+1))
-    ax1.legend()
-    ax1.grid()
-    return fig
-#-------------- plotlyapunov_a ---------------------
-# lyapunov-exponent und große Halbachse
-def plotlyapunov_a(l,a):
-    fig, ax1 = plt.subplots(1,1)
-    ax1.set(ylabel = 'Lyapunov-Exponent', xlabel = '$a$/$a_{Jupiter}$')
-    ax1.plot(a,l,'o-')
-    ax1.grid()
-    #fig.savefig('lyapunov_simu_a.png')
-    return fig
-# --------------- plotlyapunov_m ---------------------
-def plotlyapunov_m(l,m):
-    fig, ax1 = plt.subplots(1,1)
-    ax1.set_xscale('log')
-    ax1.set(ylabel = 'Lyap.-Expo.', xlabel = '$m$/$M_{Helga}$')
-    if isinstance(l,list):
-        n_l = len(l)
-        for i in range(n_l):
-            steps = len(m[i])
-            ax1.plot(m[i],l[i],'o-', label = ' run %d with %d points' %(i,steps))
-    else: ax1.plot(m,l,'o-', label = 'a fixed')
-    ax1.legend()
-    ax1.grid()
-    return fig
-#---------------- plotlyapunov_mt_surface ---------------------
-def plotlyapunov_ma_surface(m,a,l):
-    # print(m,a,l)
-    m = np.log10(m)
-    fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(10,8))
-    # print('shape m:', np.shape(m))
-    # print('shape a:', np.shape(a))
-    m, a = np.meshgrid(m, a)
-    print('shape m:', np.shape(m))
-    print('shape a:', np.shape(a))
+    return  sim, sim.calculate_lyapunov() # returns Lypunov exp in 1/years
 
-    # ax.set_xscale('log')
-    # ax.set_zscale('log')
-    ax.set(zlabel = 'Lyap.-Expo.', xlabel = '$\log_{10}$($m$/$M_{Helga})$',
-                ylabel= '$a$/$a_{Jupiter}$')
-    # ax.set_xlim(1e-13, 1e-8)
-    # ax.set_ylim(3.62,3.64 )
-    # transpose lyapunovs
-    # print('shape l:', np.shape(l))
-    # l = np.log10(l)
-    l = np.transpose(l)
-    print('shape l:', np.shape(l))
-
-# Plot the surface.
-    surf = ax.plot_surface(m, a, l, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-# Add a color bar which maps values to colors.
-    # fig.colorbar(surf, shrink=0.5, aspect=5)
-    return figpAF
 # -------------- lyapunov_t_multiple ------------
 # creates a plot of lypanov-exponents over time for n EQUAL simulations of Helga
 # starting from given 'start' time and stepping in time with 'stepsize'
@@ -148,8 +74,8 @@ def lyapunov_a_multiple(start,end,stepsize,t):
         sim, l = simu(sim, t)
         lyapunov[i] = l
     fig = plotlyapunov_a(lyapunov,H)
-    plt.title('Auswertung bei $t = %3d  2 \pi $' %t)
-    fig.savefig('plots/lyapunov_exp_helga_a_variation.png')
+    plt.title('Auswertung bei $t = %3d $' %t)
+    fig.savefig('resonance_width_plots/lyapunov_exp_helga_a_variation.png')
 #------------------- plot lyapunov_e_multiple ------------
 # calculates lyap. expo. for varying excentricity of Helga
 # creates a plot of lyapunov-exponents over e
@@ -261,7 +187,7 @@ t_steps = 30
 t_start = 1
 t_end = 7
 
-a_t = 1e5   # a_t: Auswertungszeitpunkt
+a_t = 1e5  # a_t: Auswertungszeitpunkt
 a_start_1 = 0.696
 a_end_1 = 0.699
 a_stepsize_1 = 0.00005
@@ -289,8 +215,8 @@ t = 1e2
 
 if __name__ == "__main__":
     # lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
-    # lyapunov_a_multiple( a_start_1, a_end_1, a_stepsize_1, a_t)
-    lyapunov_e_multiple( e_start, e_end, e_steps, e_t)
+    lyapunov_a_multiple( a_start_1, a_end_1, a_stepsize_1, a_t)
+    # lyapunov_e_multiple( e_start, e_end, e_steps, e_t)
     # lyapunov_helga_m_stoerung(m_start,m_end,m_steps,m_t)
     # lyapunov_m_multiple_stoerung(m_start,m_end,m_steps,m_t,m_runs)
     # lyapunov_helga_ma_stoerung(m_start_2,m_end_2,m_steps_2,a_start_2,a_end_2,a_steps_2,t,h)

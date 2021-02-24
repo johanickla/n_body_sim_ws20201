@@ -38,16 +38,4 @@
   publisher = {{EDP} Sciences},
 }
 
-@Article{Wisdom1980,
-  author    = {J. Wisdom},
-  title     = {The resonance overlap criterion and the onset of stochastic behavior in the restricted three-body problem},
-  journal   = {The Astronomical Journal},
-  year      = {1980},
-  volume    = {85},
-  pages     = {1122},
-  month     = {aug},
-  doi       = {10.1086/112778},
-  publisher = {American Astronomical Society},
-}
-
 @Comment{jabref-meta: databaseType:bibtex;}
