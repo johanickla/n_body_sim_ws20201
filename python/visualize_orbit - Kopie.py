@@ -3,8 +3,6 @@ import rebound
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import time
-import visualize_orbit
 #--------------- Create Simulation object
 
 #h= semimajoraxis Helga/Jupiter
@@ -30,25 +28,44 @@ def setup(option,h = 1,exc = 1):
 #------------- calculate -------------
 
 def PAFintegrate(arbsim ,tmax, Ntimes,delta_t):
-    # set integrator and dt
-    arbsim.integrator = "whfast"
-    arbsim.dt = delta_t #sets the timestep
+    arbsim.move_to_com() #center of mass is at the origin and does not move
+    arbsim.init_megno()
     # setting time scale
     times = np.linspace(0,tmax,Ntimes)
+    #zerros = np.zeros((len(times),arbsim.N-1))
     # create equal arrays for each observable
     x = np.zeros((len(times),arbsim.N-1))
     y = np.zeros((len(times),arbsim.N-1))
     z = np.zeros((len(times),arbsim.N-1))
+    vx = np.zeros((len(times),arbsim.N-1))
+    vy = np.zeros((len(times),arbsim.N-1))
+    vz = np.zeros((len(times),arbsim.N-1))
+    a = np.zeros((len(times),arbsim.N-1))
+    lyapunov_PAF = np.zeros(len(times))
+    # set integrator and dt
+    arbsim.integrator = "whfast"
+    arbsim.dt = delta_t #sets the timestep
+
     for i, t in enumerate(times):
         arbsim.integrate(t)
+        lyapunov_PAF[i]=(arbsim.calculate_lyapunov()/(2.*np.pi))
         particles = arbsim.particles
         for k in range(1,arbsim.N,1):
             x[i,k-1] = particles[k].x
             y[i,k-1] = particles[k].y
             z[i,k-1] = particles[k].z
-    return arbsim, times, x, y, z #returns sim, timesteps and particle locations without sun
+            vx[i,k-1] = particles[k].vx
+            vy[i,k-1] = particles[k].vy
+            vz[i,k-1] = particles[k].vz
+            a[i,k-1] = particles[k].a
+
+    return arbsim, times, x, y, z, vx, vy, vz, a, lyapunov_PAF
 
 
+#-------------------- test plotting ----------------------------
+# fig1 = plt.figure(figsize=(5,5))
+# plt.plot(times2,x2)
+# fig1.savefig("test.png")
 #--------------------   plotting xyz   ----------------------------
 def plotabsolutes(x,y,z,n):
     axes = ()

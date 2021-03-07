@@ -28,13 +28,13 @@ def orbit_ratio(n,m):
     return h
 
 def simu(sim, t):
-    #set integrator and timestep
     sim.integrator = "whfast"
+    #sim.min_dt = 5.
     sim.dt = 1.
     # center of mass is at the origin and does not move
     sim.move_to_com()
-    #initializes the MEGNO particles and makes integration possible
     sim.init_megno()
+    #jov_yr = 11.86
     # Hide warning messages (WHFast timestep too large)
     with warnings.catch_warnings(record=True) as w:
          warnings.simplefilter("always")
