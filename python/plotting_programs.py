@@ -21,8 +21,10 @@ def plotlyapunov_t(lyapunov, times, k):
 # lyapunov-exponent und große Halbachse
 def plotlyapunov_a(l,a):
     fig, ax1 = plt.subplots(1,1)
-    ax1.set(ylabel = 'Lyapunov-Exponent', xlabel = '$a$/$a_{Jupiter}$')
-    ax1.plot(a,l,'o-')
+    ax1.set(ylabel = 'Lyapunov-Exponent',
+            xlabel = '$a$/$a_{Jupiter}$'
+            )
+    ax1.plot(a,l,'o-', label='calculated')
     ax1.grid()
     # fig.savefig('plots/lyapunov_a.png')
     return fig
@@ -30,7 +32,8 @@ def plotlyapunov_a(l,a):
 # lyapunov-exponent und Exzentrizitäten
 def plotlyapunov_e(l,e):
     fig, ax1 = plt.subplots(1,1)
-    ax1.set(ylabel = 'Lyapunov-Exponent', xlabel = 'Exzentrizität $e$')
+    ax1.set(ylabel = 'Lyapunov-Exponent',
+            xlabel = 'Exzentrizität $e$')
     ax1.plot(e,l,'o-')
     ax1.grid()
     # fig.savefig('plots/lyapunov_a.png')
@@ -39,7 +42,9 @@ def plotlyapunov_e(l,e):
 def plotlyapunov_m(l,m):
     fig, ax1 = plt.subplots(1,1)
     ax1.set_xscale('log')
-    ax1.set(ylabel = 'Lyap.-Expo.', xlabel = '$m$/$M_{Helga}$')
+    ax1.set(ylabel = 'Lyap.-Expo.',
+            xlabel = '$m$/$M_{Helga}$'
+            )
     if isinstance(l,list):
         n_l = len(l)
         for i in range(n_l):
@@ -81,10 +86,10 @@ def plotlyapunov_ma_surface(m,a,l,h = None):
     #                 cmap='plasma')
     c = ax1.pcolor(m, a, l, norm = LogNorm(vmin=l.min(), vmax=l.max()),
                      shading = 'auto', cmap='plasma')
-    ax1.set(xlabel = '$m$/$M_{Helga}$', xscale = 'log',
-                ylabel= '$a$/$a_{Jupiter}$')
+    ax1.set(xlabel = '$m$/$M_{Helga}$',
+            xscale = 'log',
+            ylabel= '$a$/$a_{Jupiter}$')
     fig.colorbar(c, ax=ax1)
-    ax1.set(xscale = 'log')
     return fig
 #---------------- plotlyapunov_max ---------------------
 def plotlyapunov_max(masses,a_max_lyapunov,t):
@@ -96,3 +101,69 @@ def plotlyapunov_max(masses,a_max_lyapunov,t):
     plt.title('max. Lyapunovexponent nach $t = %3d$ years %(t)')
     ax1.grid()
     return fig
+
+
+# #--------------- plotlyapunov_t --------------------
+# # lyapunov und zeit
+# def plotlyapunov_t(lyapunov, times, k):
+#     times_j=times/11.863 #Zeit in Jupiterjahren, 1Jupiterjahr sind 11,863 erdjahre
+#     lyapunov_j=lyapunov*11.863 #in 1/jupiterjahrn
+#     fig, ax1 = plt.subplots(1,1)
+#     ax1.set_xscale('log')
+#     ax1.set_yscale('log')
+#     ax1.set(ylabel ='Lyapunov-Exponent', xlabel = 'Zeit $t$ in Jupiterjahren')
+#     ax1.plot(times_j,lyapunov,'o-', label = 'run %d' %(k+1))
+#     ax1.legend()
+#     ax1.grid()
+#     return fig
+# #-------------- plotlyapunov_a ---------------------
+# # lyapunov-exponent und große Halbachse
+# def plotlyapunov_a(l,a):
+#     fig, ax1 = plt.subplots(1,1)
+#     ax1.set(ylabel = 'Lyapunov-Exponent', xlabel = '$a$/$a_{Jupiter}$')
+#     ax1.plot(a,l,'o-')
+#     ax1.grid()
+#     #fig.savefig('lyapunov_simu_a.png')
+#     return fig
+# # --------------- plotlyapunov_m ---------------------
+# def plotlyapunov_m(l,m):
+#     fig, ax1 = plt.subplots(1,1)
+#     ax1.set_xscale('log')
+#     ax1.set(ylabel = 'Lyap.-Expo.', xlabel = '$m$/$M_{Helga}$')
+#     if isinstance(l,list):
+#         n_l = len(l)
+#         for i in range(n_l):
+#             steps = len(m[i])
+#             ax1.plot(m[i],l[i],'o-', label = ' run %d with %d points' %(i,steps))
+#     else: ax1.plot(m,l,'o-', label = 'a fixed')
+#     ax1.legend()
+#     ax1.grid()
+#     return fig
+# #---------------- plotlyapunov_mt_surface ---------------------
+# def plotlyapunov_ma_surface(m,a,l):
+#     # print(m,a,l)
+#     m = np.log10(m)
+#     fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(10,8))
+#     # print('shape m:', np.shape(m))
+#     # print('shape a:', np.shape(a))
+#     m, a = np.meshgrid(m, a)
+#     print('shape m:', np.shape(m))
+#     print('shape a:', np.shape(a))
+#
+#     # ax.set_xscale('log')
+#     # ax.set_zscale('log')
+#     ax.set(zlabel = 'Lyap.-Expo.', xlabel = '$\log_{10}$($m$/$M_{Helga})$',
+#                 ylabel= '$a$/$a_{Jupiter}$')
+#     # ax.set_xlim(1e-13, 1e-8)
+#     # ax.set_ylim(3.62,3.64 )
+#     # transpose lyapunovs
+#     # print('shape l:', np.shape(l))
+#     # l = np.log10(l)
+#     l = np.transpose(l)
+#     print('shape l:', np.shape(l))
+#
+# # Plot the surface.
+#     surf = ax.plot_surface(m, a, l, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+# # Add a color bar which maps values to colors.
+#     # fig.colorbar(surf, shrink=0.5, aspect=5)
+#     return figpAF
