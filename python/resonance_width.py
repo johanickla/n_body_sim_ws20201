@@ -6,6 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from plotting_programs import plotlyapunov_a
 from scipy.optimize import curve_fit
+from lyapunov_exponent import hill_sphere_radius,orbit_ratio
 #---------------------------------
 a_resonants = np.array([0.697956,0.697910,0.697700,0.697498,0.697155,0.696579])
 #--------------- functions for fitting --------------------------------
@@ -48,14 +49,18 @@ def a_resonant(mu):
     # erg = b*(1-c2*mu**(1/2))
     erg = b+a*mu
     return erg
-def pres_res_width(m):
+def presumed_res_width(m):
     return 0.15*(m**(2/3))
 def semimajors_surrounding(mu,a_steps):
-    a_res = a_resonant(mu)
-    c = pres_res_width(mu)
-    C = np.linspace(a_res-c, a_res, int(a_steps/2)-1, endpoint = False)
-    D = np.linspace(a_res, a_res+c, int(a_steps/2)+1, endpoint = True)
-    A = np.concatenate((C,D), axis=0)
+    a_res = orbit_ratio(3,4)
+    a_start = a_res*0.995
+    a_end = a_res*1.0
+    A = np.linspace(a_start,a_end,a_steps)
+    # a_res = a_resonant(mu)
+    # c = presumed_res_width(mu)
+    # C = np.linspace(a_res-c, a_res, int(a_steps/2)-1, endpoint = False)
+    # D = np.linspace(a_res, a_res+c, int(a_steps/2)+1, endpoint = True)
+    # A = np.concatenate((C,D), axis=0)
     return A
 #----------------- fitting of all calc. resonant widths ------------------------
 def multi_resonance_width_fit(rw,Mu):
@@ -113,48 +118,54 @@ def multi_resonance_width(a_steps,Mu,t):
     return Res_Widths
 #------------- plot all resonant widths with fit ---------------------
 def plot_res_widths(Res_Widths,Mu):
+    # SMALL_SIZE = 8
+    # matplotlib.rc('font', size=11)
     RWfit, params = multi_resonance_width_fit(Res_Widths,Mu)
     fig, ax1 = plt.subplots()
     alphastr = r'$\alpha$'
     betastr = r'$\beta$'
     ax1.set(xscale = 'log',yscale = 'log',
-            ylabel = 'Resonanzbreite (a.u.)',
-            xlabel = 'Massenverhältnis $\mu = m_{Planet}/m_{Star}$',
-            title = '7/12-Resonanz'
+            title = '7/12-resonance'
             )
+    plt.ylabel('resonance width ($a_{Jupiter}$)', fontsize=11.5)
+    plt.xlabel('mass ratio $\mu = m_{planet}/m_{star}$', fontsize=11.5)
     ax1.plot(Mu,Res_Widths,'o-',label='calculated')
     ax1.plot(Mu, RWfit,'r-',label=('fit: a$\mu^b$' ) )
     ax1.grid()
-    ax1.legend(title = ('fitting parameters: \n a: %.3e \n b: %.3e' %(params[0],params[1])))
+    leg = ax1.legend(fontsize = 12)
+    leg.set_title('fitting parameters: \n a: %.2e \n b: %.2e' %(params[0],params[1]),prop={'size':12})
     # ax1.ticklabel_format(axis="y", style="sci", scilimits = (-7,-4))
     return fig
 #------------- plot single resonant with fit ---------------------
 def plotsingles(L,A,params,mu):
     fig = plotlyapunov_a(L,A)
-    plt.title('$t = %3d \cdot  2\pi $ , $\mu = %.5f$' %(t,mu))
+    plt.title('$t = %d\cdot2\pi$, mass ratio $\mu = %.5f$' %(t,mu))
     fit = np.zeros(len(A))
     for i in range(len(A)):
          fit[i] = gaussian_4(A[i], *params)
-    plt.plot(A, fit, 'r-',label='fit')
-    plt.legend(title = 'fitting parameters: \n $\sigma$: %.4e \n $\mu$: %.4e \n $a$: %.4e' %(params[0],params[1],params[2]))
+    plt.plot(A, fit, 'r-',label='fit: $b\cdot\exp (-[(a-a_0)/(2\sigma)]^4)$')
+    leg = plt.legend(fontsize = 11.5)
+    leg.set_title('fitting parameters: \n $\sigma$: %.4e \n $a_0$: %.4e \n $b$: %.4e' %(params[0],params[1],params[2]))
     fig.savefig('resonance_width_plots/single_lyapunovs_over_a/lyap_exp_a_variation_%.6f.png' %(mu))
 #--------------------------------------------------------------
-t = 1e6  # t: Auswertungszeitpunkt
 
-a_start = 0.6955
-a_end = 0.6985
-a_steps = 50
-a_stepsize = (a_end - a_start)/a_steps
-# A = np.linspace(a_start, a_end, a_steps)
-# A: array großer Halbachsen
-mass_ratio_start = -5
-mass_ratio_end = -3
-mass_ratio_steps = 27
-Mu = np.logspace(mass_ratio_start,mass_ratio_end,mass_ratio_steps)
-# Mu: array von Massenverhältnissen
-print('Masses of largest Planet (Jupiter):\n', Mu)
 
 if __name__ == '__main__':
+    t = 1e6  # t: Auswertungszeitpunkt
+    n = 3
+    m = 4
+    a_start = orbit_ratio(n,m)*0.997
+    a_end = orbit_ratio(n,m)*1.0
+    a_steps = 50
+    a_stepsize = (a_end - a_start)/a_steps
+    # A = np.linspace(a_start, a_end, a_steps)
+    # A: array großer Halbachsen
+    mass_ratio_start = -5
+    mass_ratio_end = -4
+    mass_ratio_steps = 10
+    Mu = np.logspace(mass_ratio_start,mass_ratio_end,mass_ratio_steps)
+    # Mu: array von Massenverhältnissen
+    print('Masses of largest Planet (Jupiter):\n', Mu)
     reswidth = multi_resonance_width(a_steps, Mu, t)
     print('Resonance Width: \n',reswidth)
     fig1 = plot_res_widths(reswidth, Mu)

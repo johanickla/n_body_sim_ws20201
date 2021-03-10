@@ -3,7 +3,7 @@ from matplotlib import cm
 from matplotlib.colors import LogNorm
 
 import numpy as np
-from lyapunov_exponent import hill_sphere_radius
+from lyapunov_exponent import hill_sphere_radius,orbit_ratio
 #--------------- plotlyapunov_t --------------------
 # lyapunov und zeit
 def plotlyapunov_t(lyapunov, times, k):
@@ -21,9 +21,8 @@ def plotlyapunov_t(lyapunov, times, k):
 # lyapunov-exponent und große Halbachse
 def plotlyapunov_a(l,a):
     fig, ax1 = plt.subplots(1,1)
-    ax1.set(ylabel = 'Lyapunov-Exponent',
-            xlabel = '$a$/$a_{Jupiter}$'
-            )
+    plt.ylabel('lyapunov exponent $\gamma_L$', fontsize=11.5)
+    plt.xlabel('$a$/$a_{Jupiter}$', fontsize=11.5)
     ax1.plot(a,l,'o-', label='calculated')
     ax1.grid()
     # fig.savefig('plots/lyapunov_a.png')
@@ -32,7 +31,7 @@ def plotlyapunov_a(l,a):
 # lyapunov-exponent und Exzentrizitäten
 def plotlyapunov_e(l,e):
     fig, ax1 = plt.subplots(1,1)
-    ax1.set(ylabel = 'Lyapunov-Exponent',
+    ax1.set(ylabel = 'lyapunov exponent',
             xlabel = 'Exzentrizität $e$')
     ax1.plot(e,l,'o-')
     ax1.grid()
@@ -42,9 +41,8 @@ def plotlyapunov_e(l,e):
 def plotlyapunov_m(l,m):
     fig, ax1 = plt.subplots(1,1)
     ax1.set_xscale('log')
-    ax1.set(ylabel = 'Lyap.-Expo.',
-            xlabel = '$m$/$M_{Helga}$'
-            )
+    plt.ylabel('Lyap.-Expo.', fontsize=11.5)
+    plt.xlabel('$m$/$M_{Helga}$', fontsize=11.5)
     if isinstance(l,list):
         n_l = len(l)
         for i in range(n_l):
