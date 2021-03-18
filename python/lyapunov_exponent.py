@@ -1,10 +1,13 @@
 import rebound
 import numpy as np
 import warnings
-
 import visualize_orbit
-# from plotting_programs import *
 
+# This program allows the user to calculate the lyapunov exponent of Helga when
+# varying the time of evaluation, the semimajor axis and the excentricity of Helga.
+# In addition one can also introduce a disturbing object which varies in mass
+# and position. The user can compare the influence area of this object with it's
+# hill sphere radius.
 
 #------------- calculate the hill sphere radius of an object with mass m, half achse a
 #----------------- surrounding an object with size M at an excentricity e
@@ -88,7 +91,8 @@ def lyapunov_e_multiple(e_start,e_end,e_steps,e_t):
     E = np.arange(e_start,e_end,e_stepsize)
     lyapunov = np.zeros(e_steps)
     for i,exc in enumerate(E):
-        sim = visualize_orbit.setup('resonant',h,exc) #jedes mal neu initialisiert
+        # newly initialised
+        sim = visualize_orbit.setup('resonant',h,exc)
         # lyapunov = man_lyapunov(sim, [t])
         sim, l = simu(sim, e_t)
         lyapunov[i] = l
@@ -170,7 +174,6 @@ def lyapunov_helga_ma_stoerung(m_start,m_end,m_steps,a_start,a_end,a_steps,t,h):
             sim, l = simu(sim, t)
             if l < 0:
                 l = 1e-8
-            # print(l)
             lyapunovs[k,j] = l
         a_max_lyapunov[k] = a[ np.argmax(lyapunovs[k,:]) ]
     # print(lyapunovs)
@@ -187,7 +190,7 @@ t_steps = 30
 t_start = 1
 t_end = 7
 
-a_t = 1e5  # a_t: Auswertungszeitpunkt
+a_t = 1e5       # a_t: evaluation time
 a_start_1 = 0.696
 a_end_1 = 0.699
 a_stepsize_1 = 0.00005
@@ -197,16 +200,17 @@ e_end = .09
 e_steps = 50
 e_t = 1e2
 
-m_start = 1 # m_start: starting exponent base 10
-m_end = 10 # m_end: ending exponent base 10
-m_steps = 30 # m_steps: Mindestanzahl an Schritten
+m_start = 1     # m_start: starting exponent base 10
+m_end = 10      # m_end: ending exponent base 10
+m_steps = 30    # m_steps: Mindestanzahl an Schritten
 m_t = 1e5
-m_runs = 4 # m_runs: wie oft soll die Schrittzahl verdoppelt werden
+m_runs = 4      # m_runs: number of times the disturbing mass is doubled
 
-m_start_2 = 0 # m_start: starting exponent base 10
-m_end_2 = 6 # m_end: ending exponent base 10
+m_start_2 = 0   # m_start: starting exponent base 10
+m_end_2 = 6     # m_end: ending exponent base 10
 m_steps_2 = 100
-h = 0.696    # orbit_ratio(11,12)
+
+h = 0.696       # orbit_ratio(11,12)
 a_start_2 = h*0.998      # 0.696
 a_end_2 = h*1.002        # 0.699
 a_steps_2 = 100

@@ -6,7 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from plotting_programs import plotlyapunov_a
 from scipy.optimize import curve_fit
-from lyapunov_exponent import hill_sphere_radius,orbit_ratio
+from lyapunov_exponent import orbit_ratio
 #---------------------------------
 a_resonants = np.array([0.697956,0.697910,0.697700,0.697498,0.697155,0.696579])
 #--------------- functions for fitting --------------------------------
@@ -14,8 +14,10 @@ def gaussian_2(x,sigma=1,mu=1,a=1):  # sigma: std dev., mu: mean, a: height
     return a * np.exp(-((x-mu)/(2*sigma))**2) # *1/np.sqrt(2*np.pi*sigma**2)
 def gaussian_4(x,sigma=1,mu=1,a=1):    # sigma: std dev., mu: mean, a: height
     return a * np.exp(-((x-mu)/(2*sigma))**4) # *1/np.sqrt(2*np.pi*sigma**2)
+# 2/3 power law without offset used for fitting    
 def power2_3(x,alpha):
     return  alpha*x**2/3
+# general power law without offset used for fitting
 def gen_power(x,alpha,beta):
     return alpha*x**beta
 #--------------- Create Simulation object ----------------------------
@@ -49,22 +51,28 @@ def a_resonant(mu):
     # erg = b*(1-c2*mu**(1/2))
     erg = b+a*mu
     return erg
-def presumed_res_width(m):
+
+# presumed resonance width
+def pres_res_width(m):
     return 0.15*(m**(2/3))
+
+# to find the surrounding semimajor axes, one needs to find an individual fit!
 def semimajors_surrounding(mu,a_steps):
     a_res = orbit_ratio(3,4)
-    a_start = a_res*0.995
-    a_end = a_res*1.0
+    a_start = 0.8230#a_res*0.996
+    a_end = 0.8245 #a_res
     A = np.linspace(a_start,a_end,a_steps)
     # a_res = a_resonant(mu)
-    # c = presumed_res_width(mu)
+    # c = pres_res_width(mu)
     # C = np.linspace(a_res-c, a_res, int(a_steps/2)-1, endpoint = False)
     # D = np.linspace(a_res, a_res+c, int(a_steps/2)+1, endpoint = True)
     # A = np.concatenate((C,D), axis=0)
     return A
-#----------------- fitting of all calc. resonant widths ------------------------
+#----------------- multi_resonance_width_fit ------------------------
+#-------- fitting of all calc. resonant widths (to a power law)
 def multi_resonance_width_fit(rw,Mu):
-    alpha = rw[-1]/(Mu[-1]**(2/3)) # for initial alpha assume power 2/3 and use last data point
+    # for initial alpha assume power 2/3 and use last data point
+    alpha = rw[-1]/(Mu[-1]**(2/3))
     p0 = [alpha,2/3]
     params, params_conv = curve_fit(gen_power, Mu, rw, p0 )
     fitted_rw = gen_power(Mu, *params)
@@ -80,7 +88,10 @@ def lyapunov_calculator(sim, t):
     #      warnings.simplefilter("always")
     sim.integrate(t)
     return  sim, sim.calculate_lyapunov()/(2*np.pi) # returns Lypunov exp in 1/years
-#------------ calc. mulitple lyap. exponents for Helga at varying a -----------
+#------------ lyapunov_a_multiple -----------
+#------- initialize L array
+#------- calculate mulitple lyap. exponents for Helga at varying semimajors a
+#-------------- by seting up the simulation from anew each time
 def lyapunov_a_multiple(A,t,m_Jupiter):
     L = np.zeros(len(A))                     # L: Lyapunov exponents
     for i,a in enumerate(A):
@@ -88,7 +99,13 @@ def lyapunov_a_multiple(A,t,m_Jupiter):
         sim, l = lyapunov_calculator(sim_helga, t)
         L[i] = l
     return L
-# -------------- get the resonance width by fitting -----------------------
+# -------------- single_resonance_width -----------------------
+#------ get the resonance width by fitting a gauss to L(A)
+#------ for starting gauss parameters assume
+#------------- expectation value: middle of A (gauss centered)
+#------------- sigma: half width of A
+#------------- max. value: max. of L
+#------ print result
 def single_resonance_width(L,A,mu):
     lyap_max = np.amax(L)
     maxindex = np.where(L == lyap_max)[0][0]
@@ -101,13 +118,16 @@ def single_resonance_width(L,A,mu):
             )
     print('Parameters (sigma,mu,a): ', parameters)
     return  parameters
-#--------------------- main function: -----------------------------------------
-#------ initialize, perform calculations, plot single res(mu) ----------------
+#--------------------- multi_resonance_width (main function) ------------------
+#------ initialize the arrays A, L and Res_Widths
+#------ fill A, so that elements include the resonant regio for each mass ratio
+#------ perform calculations for each mass ratio in Mu
+#------ fit a augmented gauss to each resonance lyap(a)
+#------ plot single resonance lyap(a) for each mass ratio
 def multi_resonance_width(a_steps,Mu,t):
     A = np.zeros( (len(Mu), a_steps) )
     L = np.zeros( (len(Mu), a_steps) )
     Res_Widths = np.zeros_like(Mu)
-
     for i in range(len(Mu)):
         A[i,:] = semimajors_surrounding(Mu[i],a_steps)
         L[i,:] = lyapunov_a_multiple(A[i,:], t, Mu[i])
@@ -118,55 +138,53 @@ def multi_resonance_width(a_steps,Mu,t):
     return Res_Widths
 #------------- plot all resonant widths with fit ---------------------
 def plot_res_widths(Res_Widths,Mu):
-    # SMALL_SIZE = 8
-    # matplotlib.rc('font', size=11)
     RWfit, params = multi_resonance_width_fit(Res_Widths,Mu)
     fig, ax1 = plt.subplots()
     alphastr = r'$\alpha$'
     betastr = r'$\beta$'
     ax1.set(xscale = 'log',yscale = 'log',
-            title = '7/12-resonance'
+            ylabel = 'Resonanzbreite (a.u.)',
+            xlabel = 'Massenverhältnis $\mu = m_{Planet}/m_{Star}$',
+            title = '7/12-Resonanz'
             )
-    plt.ylabel('resonance width ($a_{Jupiter}$)', fontsize=11.5)
-    plt.xlabel('mass ratio $\mu = m_{planet}/m_{star}$', fontsize=11.5)
     ax1.plot(Mu,Res_Widths,'o-',label='calculated')
     ax1.plot(Mu, RWfit,'r-',label=('fit: a$\mu^b$' ) )
     ax1.grid()
-    leg = ax1.legend(fontsize = 12)
-    leg.set_title('fitting parameters: \n a: %.2e \n b: %.2e' %(params[0],params[1]),prop={'size':12})
+    ax1.legend(title = ('fitting parameters: \n a: %.3e \n b: %.3e' %(params[0],params[1])))
     # ax1.ticklabel_format(axis="y", style="sci", scilimits = (-7,-4))
     return fig
 #------------- plot single resonant with fit ---------------------
 def plotsingles(L,A,params,mu):
     fig = plotlyapunov_a(L,A)
-    plt.title('$t = %d\cdot2\pi$, mass ratio $\mu = %.5f$' %(t,mu))
+    plt.title('$t = %3d \cdot  2\pi $ , $\mu = %.5f$' %(t,mu))
     fit = np.zeros(len(A))
     for i in range(len(A)):
          fit[i] = gaussian_4(A[i], *params)
-    plt.plot(A, fit, 'r-',label='fit: $b\cdot\exp (-[(a-a_0)/(2\sigma)]^4)$')
-    leg = plt.legend(fontsize = 11.5)
-    leg.set_title('fitting parameters: \n $\sigma$: %.4e \n $a_0$: %.4e \n $b$: %.4e' %(params[0],params[1],params[2]))
+    plt.plot(A, fit, 'r-',label='fit')
+    plt.legend(title = 'fitting parameters: \n $\sigma$: %.4e \n $\mu$: %.4e \n $a$: %.4e' %(params[0],params[1],params[2]))
     fig.savefig('resonance_width_plots/single_lyapunovs_over_a/lyap_exp_a_variation_%.6f.png' %(mu))
 #--------------------------------------------------------------
 
 
 if __name__ == '__main__':
-    t = 1e6  # t: Auswertungszeitpunkt
-    n = 3
-    m = 4
-    a_start = orbit_ratio(n,m)*0.997
-    a_end = orbit_ratio(n,m)*1.0
+    t = 1e6  # t: time of evaluation
+    # a_start = 0.6955
+    # a_end = 0.6985
+    # a_stepsize = (a_end - a_start)/a_steps
+
     a_steps = 50
-    a_stepsize = (a_end - a_start)/a_steps
+    # # A: array of semimajor axises
     # A = np.linspace(a_start, a_end, a_steps)
-    # A: array großer Halbachsen
     mass_ratio_start = -5
-    mass_ratio_end = -4
-    mass_ratio_steps = 10
+    mass_ratio_end = -3
+    mass_ratio_steps = 20
+    # Mu: array of mass ratios
     Mu = np.logspace(mass_ratio_start,mass_ratio_end,mass_ratio_steps)
-    # Mu: array von Massenverhältnissen
+
     print('Masses of largest Planet (Jupiter):\n', Mu)
+
     reswidth = multi_resonance_width(a_steps, Mu, t)
-    print('Resonance Width: \n',reswidth)
     fig1 = plot_res_widths(reswidth, Mu)
     fig1.savefig('resonance_width_plots/res_width_over_mu')
+
+    print('Resonance Width: \n',reswidth)
