@@ -2,6 +2,7 @@ import rebound
 import numpy as np
 import warnings
 import visualize_orbit
+from plotting_programs import *
 
 # This program allows the user to calculate the lyapunov exponent of Helga when
 # varying the time of evaluation, the semimajor axis and the excentricity of Helga.
@@ -195,15 +196,15 @@ a_start_1 = 0.696
 a_end_1 = 0.699
 a_stepsize_1 = 0.00005
 
+e_t = 1e6
 e_start = .07
 e_end = .09
 e_steps = 50
-e_t = 1e2
 
+m_t = 1e6
 m_start = 1     # m_start: starting exponent base 10
 m_end = 10      # m_end: ending exponent base 10
 m_steps = 30    # m_steps: Mindestanzahl an Schritten
-m_t = 1e5
 m_runs = 4      # m_runs: number of times the disturbing mass is doubled
 
 m_start_2 = 0   # m_start: starting exponent base 10
@@ -219,8 +220,8 @@ t = 1e2
 
 if __name__ == "__main__":
     # lyapunov_t_multiple(t_n, t_start, t_end, t_steps)
-    lyapunov_a_multiple( a_start_1, a_end_1, a_stepsize_1, a_t)
-    # lyapunov_e_multiple( e_start, e_end, e_steps, e_t)
+    # lyapunov_a_multiple( a_start_1, a_end_1, a_stepsize_1, a_t)
+    lyapunov_e_multiple( e_start, e_end, e_steps, e_t)
     # lyapunov_helga_m_stoerung(m_start,m_end,m_steps,m_t)
     # lyapunov_m_multiple_stoerung(m_start,m_end,m_steps,m_t,m_runs)
     # lyapunov_helga_ma_stoerung(m_start_2,m_end_2,m_steps_2,a_start_2,a_end_2,a_steps_2,t,h)
